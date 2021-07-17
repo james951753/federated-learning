@@ -5,7 +5,13 @@ import copy
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-
+'''
+get the most influencial gradients
+parameters:
+T: all the gradients
+p: the percentage of topk
+frac: idk
+'''
 def approx_v(T, p, frac):
   if frac < 1.0:
     n_elements = T.numel()
