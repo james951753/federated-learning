@@ -41,6 +41,7 @@ experiments = [xpm.Experiment(hyperparameters=hp) for hp in hp_dicts]
 def run_experiments(experiments):
 	print("Running {} Experiments..\n".format(len(experiments)))
 	for xp_count, xp in enumerate(experiments):
+		global_updates = []
 		hp = dhp.get_hp(xp.hyperparameters)
 		xp.prepare(hp)
 		print(xp)
@@ -73,8 +74,8 @@ def run_experiments(experiments):
 
 			# Server does  
 			server.aggregate_weight_updates(participating_clients, aggregation=hp['aggregation'])  
-			server.compress_weight_update_down(compression=hp['compression_down'], accumulate=hp['accumulation_down'], count_bits=hp["count_bits"])
-
+			global_update = server.compress_weight_update_down(compression=hp['compression_down'], accumulate=hp['accumulation_down'], count_bits=hp["count_bits"])
+			global_updates.append(global_update)
 			# Evaluate  
 			if xp.is_log_round(c_round):
 				print("Experiment: {} ({}/{})".format(args.schedule, xp_count+1, len(experiments)))
@@ -109,7 +110,7 @@ def run_experiments(experiments):
 		# Delete objects to free up GPU memory
 		del server; clients.clear()
 		torch.cuda.empty_cache()
-
+	np.save(os.path.join(hp['log_path'], args.schedule), global_updates)
 
 def print_optimizer(device):
 	try:

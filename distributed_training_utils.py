@@ -231,6 +231,7 @@ class Server(DistributedTrainingDevice):
 		if count_bits:
 			# Compute the update size
 			self.bits_sent += [comp.get_update_size(self.dW_compressed, compression)]
+		return self.dW_compressed
 
  
 	def evaluate(self, loader=None, max_samples=50000, verbose=True):
